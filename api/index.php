@@ -18,53 +18,37 @@ function login() {
     $request = \Slim\Slim::getInstance()->request();
     $data = json_decode($request->getBody());
    
-   
-    
     try {
         
         $db = getDB();
         $userData ='';
-       
-        $stmt = $db->prepare("SELECT * FROM users WHERE username=:username and password=:password ");
-       
+        $sql = "SELECT * FROM users WHERE (username=:username or email=:username) and password=:password ";
+        $stmt = $db->prepare($sql);
         $stmt->bindParam("username", $data->username, PDO::PARAM_STR);
-       
-         $password=hash('sha256',$data->password);
-  
+        $password=hash('sha256',$data->password);
         $stmt->bindParam("password", $password, PDO::PARAM_STR);
-        
-        $stmt->execute(array('username'=>$_GET['username'],
-                            'password'=>$_GET['password']));
-        
+        $stmt->execute();
         $mainCount=$stmt->rowCount();
-       
         $userData = $stmt->fetch(PDO::FETCH_OBJ);
-         
+        
         if(!empty($userData))
         {
             $user_id=$userData->user_id;
             $userData->token = apiToken($user_id);
-           
         }
         
         $db = null;
          if($userData){
                $userData = json_encode($userData);
                 echo '{"userData": ' .$userData . '}';
-             header('Location: home.html');
             } else {
                echo '{"error":{"text":"Bad request wrong username and password"}}';
-             header('Location: home.html');
             }           
     }
     catch(PDOException $e) {
         echo '{"error":{"text":'. $e->getMessage() .'}}';
     }
 }
-
-
-
-
 function fileGet() {
  $request = \Slim\Slim::getInstance()->request();
     $data = json_decode($request->getBody());
