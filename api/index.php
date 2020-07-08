@@ -1,45 +1,81 @@
 <?php
-require 'Slim/Slim.php';
-require 'helper.php';
 
+require 'Slim/Slim.php';
+require 'config.php';
+require 'helper.php';
 \Slim\Slim::registerAutoloader();
 $app = new \Slim\Slim();
-    
-
-$app->post('/signup', 'addUser');
 
 
+$app->post('/file', 'fileGet');
+$app->post('/login','login'); /* User login */
 $app->run();
 
-function getUsers() {
-	$sql = "select * FROM users ORDER BY user_id";
-	try {
-		$db = getConnection();
-		$stmt = $db->query($sql);  
-		$users = $stmt->fetchAll(PDO::FETCH_OBJ);
-		$db = null;
-		echo '{"user": ' . json_encode($users) . '}';
-	} catch(PDOException $e) {
-		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
-	}
+/************************* USER LOGIN *************************************/
+/* ### User login ### */
+function login() {
+    
+    $request = \Slim\Slim::getInstance()->request();
+    $data = json_decode($request->getBody());
+   
+   
+    
+    try {
+        
+        $db = getDB();
+        $userData ='';
+       
+        $stmt = $db->prepare("SELECT * FROM users WHERE username=:username and password=:password ");
+       
+        $stmt->bindParam("username", $data->username, PDO::PARAM_STR);
+       
+         $password=hash('sha256',$data->password);
+  
+        $stmt->bindParam("password", $password, PDO::PARAM_STR);
+        
+        $stmt->execute(array('username'=>$_GET['username'],
+                            'password'=>$_GET['password']));
+        
+        $mainCount=$stmt->rowCount();
+       
+        $userData = $stmt->fetch(PDO::FETCH_OBJ);
+         
+        if(!empty($userData))
+        {
+            $user_id=$userData->user_id;
+            $userData->token = apiToken($user_id);
+           
+        }
+        
+        $db = null;
+         if($userData){
+               $userData = json_encode($userData);
+                echo '{"userData": ' .$userData . '}';
+             header('Location: home.html');
+            } else {
+               echo '{"error":{"text":"Bad request wrong username and password"}}';
+             header('Location: home.html');
+            }           
+    }
+    catch(PDOException $e) {
+        echo '{"error":{"text":'. $e->getMessage() .'}}';
+    }
 }
 
-function addUser() { 
-    $request = \Slim\Slim::getInstance()->request();
+
+
+
+function fileGet() {
+ $request = \Slim\Slim::getInstance()->request();
     $data = json_decode($request->getBody());
     $email=$data->email;
     $username=$data->username;
     $password=$data->password;
-    
+    $name=$data->name;
     try {
-        $username = $email_check;
-       // $username_check = preg_match('~^[A-Za-z0-9_]{3,20}$~i', $username);
-        $email_check = preg_match('~^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z]{2,4})$~i', $email);
-       // $password_check = preg_match('~^[A-Za-z0-9!@#$%^&*()_]{6,20}$~i', $password);        
-        //if (strlen(trim($username))>0 && strlen(trim($password))>0 && strlen(trim($email))>0 && $email_check>0 && $username_check>0 && $password_check>0)
-        if (strlen(trim($password))>4 && strlen(trim($email))>0 && $email_check>0)
-        {
-            $db = getConnection();
+        
+        
+            $db = getDB();
             $userData = '';
             $sql = "SELECT user_id FROM users WHERE username=:username or email=:email";
             $stmt = $db->prepare($sql);
@@ -52,13 +88,13 @@ function addUser() {
             {
                 
                 /*Inserting user values*/
-                $sql1="INSERT INTO users(username,password,email)VALUES(:username,:password,:email,:username)";
+                $sql1="INSERT INTO users(username,password,email,name)VALUES(:username,:password,:email,:name)";
                 $stmt1 = $db->prepare($sql1);
                 $stmt1->bindParam("username", $username,PDO::PARAM_STR);
                 $password=hash('sha256',$data->password);
                 $stmt1->bindParam("password", $password,PDO::PARAM_STR);
                 $stmt1->bindParam("email", $email,PDO::PARAM_STR);
-         
+                 $stmt1->bindParam("name", $name,PDO::PARAM_STR);
                 $stmt1->execute();
                 
                 $userData=internalUserDetails($email);
@@ -81,15 +117,14 @@ function addUser() {
             
 
            
-        }
-        else{
-            echo '{"error":{"text":"Enter valid data"}}';
-        }
+        
     }
     catch(PDOException $e) {
         echo '{"error":{"text":'. $e->getMessage() .'}}';
     }
 }
+
+
 function internalUserDetails($input) {
     
     try {
@@ -108,14 +143,5 @@ function internalUserDetails($input) {
     }
     
 }
-function getConnection() {
-	$dbhost="localhost";
-	$dbuser="root";
-	$dbpass="";
-	$dbname="event";
-	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);	
-	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	return $dbh;
-}
 
-?>
+    ?>
