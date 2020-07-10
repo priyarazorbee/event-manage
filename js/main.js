@@ -17,8 +17,7 @@ $(document).ready(function() {
 	$("#signForm").submit(function(e){
 		e.preventDefault();
         console.log('addUser');
-    debugger;
-	$.ajax({
+    $.ajax({
 		type: 'POST',
 		contentType: 'application/json',
 		url: rootURL +'/file',
@@ -38,9 +37,7 @@ $(document).ready(function() {
    $("#loginForm").submit(function(e){
 		e.preventDefault();
         console.log('seeUser'); 
-       
-    debugger;
-	$.ajax({
+   $.ajax({
 		type: 'POST',
 		contentType: 'application/json',
 		url: rootURL +'/login',
@@ -62,8 +59,7 @@ $(document).ready(function() {
 
 function addUser() {
 	console.log('addUser');
-    debugger;
-	$.ajax({
+   $.ajax({
 		type: 'POST',
 		contentType: 'application/json',
 		url: 'http://localhost/event-manage/api/getUsers',
@@ -85,6 +81,23 @@ function addUser() {
 	});
 }
 
+$("#upload").submit(function(e){
+		var formData = new FormData($(this)[0]);
+
+  $.ajax({
+    url: rootURL +'/image',
+    type: "POST",
+    data: formData,
+    success: function (msg) {
+      alert(msg)
+    },
+    cache: false,
+    contentType: false,
+    processData: false
+  });
+
+  e.preventDefault();
+});
 
 function renderDetails(user) {
 	
