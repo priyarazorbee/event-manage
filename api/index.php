@@ -148,7 +148,7 @@ function image() {
 			if($insert_stmt->execute())
 			{
 				$insertMsg="File Upload Successfully........"; //execute query success message
-				header("refresh:3;home.html"); //refresh 3 second and redirect to index.php page
+				header("refresh:3;home.php"); //refresh 3 second and redirect to index.php page
 			}
 		}
 	}
