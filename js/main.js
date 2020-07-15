@@ -1,17 +1,11 @@
-// The root URL for the RESTful services
-var rootURL = "http://localhost/event-manage/api";
+var rootURL = "http://localhost/event-manage/api/";
 
-var currentUser;
-
-// Retrieve wine list when application starts 
-
-// Nothing to delete in initial application state
+var currentImage;
 
 
-// Register listeners
+findAll();
 
 
-// Trigger search when pressing 'Return' on search key input field
 
 $(document).ready(function() { 
 	$("#signForm").submit(function(e){
@@ -20,7 +14,7 @@ $(document).ready(function() {
     $.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: rootURL +'/file',
+		url: rootURL +'file',
 		dataType: "json",
 		data: formToJSON(),
 		success: function(data, textStatus, jqXHR){
@@ -40,7 +34,7 @@ $(document).ready(function() {
    $.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: rootURL +'/login',
+		url: rootURL +'login',
 		dataType: "json",
 		data: formToJSON(),
 		success: function(data, textStatus, jqXHR){
@@ -85,7 +79,7 @@ $("#upload").submit(function(e){
 		var formData = new FormData($(this)[0]);
 
   $.ajax({
-    url: rootURL +'/image',
+    url: rootURL +'image',
     type: "POST",
     data: formData,
     success: function (msg) {
@@ -99,16 +93,57 @@ $("#upload").submit(function(e){
   e.preventDefault();
 });
 
-function renderDetails(user) {
+function findAll() {
+	console.log('findAll');
+	$.ajax({
+		type: 'GET',
+		url: rootURL,
+		dataType: "json", // data type of response
+		success: renderList
+	});
+}
+function findById(id) {
+	console.log('findById: ' + id);
+	$.ajax({
+		type: 'GET',
+		url: rootURL + id,
+		dataType: "json",
+		success: function(data){
+			
+			console.log('findById success: ' + data.name);
+			currentImage = data;
+            var txt_name=document.getElementById("txt_name").value;
+//			$('#txt_name').val(txt_name);
+//	$('#description').val(description);
+//	$('#action').val(action);
+//	$('#txt_file').attr('src', 'api/upload/' + txt_file);
+		}
+	});
+}
+
 	
-	$('#username').val(user.name);
-	$('#email').val(user.email);
-	$('#password').val(user.password);
-	$('#confirm_password').val(user.confirm_password);
+function renderList(data) {
+	
+	var list = data == null ? [] : (data.image instanceof Array ? data.image : [data.image]);
+
+//	$('#imageList li').remove();
+	$.each(list, function(index, data) {
+		$('#imageList').append('<tr href="#" data-identity="' + data.id + '"><td class="center">'+data.name+'</td><td class="center">'+data.description+'</td><td class="center">'+data.action+'</td><td><img  class="img-thumbnail" style="width:20%;" src='+data.image+'></td><td><button class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" onClick="findById('+data.id+');">Edit</button></td></tr>');
+	});
+}
+$('#imageList tr').live('click', function() {
+	findById($(this).data('identity'));
+});
+function renderDetails(currentImage) {
+	
+	$('#txt_name').val(txt_name);
+	$('#description').val(description);
+	$('#action').val(action);
+	$('#txt_file').attr('src', 'api/upload/' + txt_file);
 	
 }
 
-// Helper function to serialize all the form fields into a JSON string
+
 function formToJSON() {
 	return JSON.stringify({
 		

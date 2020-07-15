@@ -10,7 +10,8 @@ $app = new \Slim\Slim();
 $app->post('/file', 'fileGet');
 $app->post('/login','login'); /* User login */
 $app->post('/image','image'); 
-$app->get('/viewImage', 'getImages');
+$app->get('/', 'getImages');
+$app->get('/:id','getImage');
 $app->run();
 
 /************************* USER LOGIN *************************************/
@@ -102,13 +103,15 @@ function image() {
    try {
         $db = getDB();
         $name	= $_REQUEST['txt_name'];
-	    $description	= $_REQUEST['description'];		
+	    $description	= $_REQUEST['description'];	
+       $action	= $_REQUEST['action'];	
 		$image_file	= $_FILES["txt_file"]["name"];
 		$type		= $_FILES["txt_file"]["type"];		
 		$size		= $_FILES["txt_file"]["size"];
 		$temp		= $_FILES["txt_file"]["tmp_name"];
 		
-		$path="upload/".$image_file; 	
+		$path="upload/".$image_file; 
+       echo $path;
 		if(empty($name)){
 			$errorMsg="Please Enter Name";
 		}
@@ -121,7 +124,7 @@ function image() {
 			{
 				if($size < 5000000) 
 				{
-					move_uploaded_file($temp, "upload/" .$image_file); //move upload file temperory directory to your upload folder
+					; //move upload file temperory directory to your upload folder
 				}
 				else
 				{
@@ -140,11 +143,13 @@ function image() {
 		
 		if(!isset($errorMsg))
 		{
-			$insert_stmt=$db->prepare('INSERT INTO images(name,description,image) VALUES(:name,:description,:image)'); //sql insert query					
+            
+			$insert_stmt=$db->prepare('INSERT INTO images(name,description,action,image) VALUES(:name,:description,:action,:image)'); //sql insert query					
 			$insert_stmt->bindParam(':name',$name);	
-            $insert_stmt->bindParam(':description',$description);	
-			$insert_stmt->bindParam(':image',$image_file);	  //bind all parameter 
-		     move_uploaded_file($temp, "upload/" .$image_file); 
+            $insert_stmt->bindParam(':description',$description);
+            $insert_stmt->bindParam(':action',$action);
+			$insert_stmt->bindParam(':image',$path);	  //bind all parameter 
+		    move_uploaded_file($_FILES['txt_file']['tmp_name'],"upload/".$_FILES['txt_file']['name']);
 			if($insert_stmt->execute())
 			{
 				$insertMsg="File Upload Successfully........"; //execute query success message
@@ -161,18 +166,33 @@ function image() {
 function getImages() {
         $request = \Slim\Slim::getInstance()->request();
         $data = json_decode($request->getBody()); 
-            try {
-                $db = getDB();
-                $sql = "select * FROM images";
-                $stmt = $db->query($sql);
-                $images = $stmt->fetchAll(PDO::FETCH_OBJ);
-                $db = null;
-                echo json_encode($images);
-                $app->render('view.php', array('names' => $names));
-                }
-            catch(PDOException $e) {
-                echo json_encode($e->getMessage());
-                }
+            $sql = "select * FROM images ORDER BY id";
+	try {
+		$db = getDB();
+		$stmt = $db->query($sql);  
+		$images = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		echo '{"image": ' . json_encode($images) . '}';
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+           
+}
+function getImage($id) {
+        $request = \Slim\Slim::getInstance()->request();
+        $data = json_decode($request->getBody()); 
+	$sql = "SELECT * FROM images WHERE id=:id";
+	try {
+		$db = getDB();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("id", $id);
+		$stmt->execute();
+		$image = $stmt->fetchObject();  
+		$db = null;
+		echo json_encode($image); 
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
 }
 function internalUserDetails($input) {
     

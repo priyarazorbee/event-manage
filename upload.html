@@ -12,9 +12,7 @@
     
   </head>
 <body>
-    
-
-    <nav class="navbar navbar-default navbar-static-top navbar-new">
+        <nav class="navbar navbar-default navbar-static-top navbar-new">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -32,23 +30,9 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
-	<div class="container">
-        
-       <h1 >Welcome to the application</h1>
-     
-<table class="table" id="imageList"></table>
-
-    </div>
-<div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Update file</h4>
-        </div>
-        <form method="post" class="form-horizontal" id="upload" enctype="multipart/form-data">
+  
+		
+			<form method="post" class="form-horizontal" id="upload" enctype="multipart/form-data">
 					
 				<div class="form-group">
 				<label class="col-sm-3 control-label">Name</label>
@@ -60,14 +44,14 @@
 				<div class="form-group">
 				<label class="col-sm-3 control-label">Description</label>
 				<div class="col-sm-6">
-				<input type="text" id="description"name="description" class="form-control" placeholder="enter Description" />
+				<input type="text" id="description" name="description" class="form-control" placeholder="enter Description" />
 				</div>
 				</div>
                 
                 <div class="form-group">
                  <label class="col-sm-3 control-label">Action</label>   
                 
-                  <div class="col-sm-6">   
+                  <div class="col-sm-6">  
                 <select name="action" id="action" required="required">
                             <option value="1">Active</option>
                             <option value="2">In-Active</option>
@@ -89,16 +73,6 @@
 				</div>
 					
 			</form>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-  
-
-
 
 <script src="js/jquery-1.7.1.min.js"></script>
 <script src="js/main.js"></script>

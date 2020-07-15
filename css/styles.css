@@ -85,3 +85,26 @@ button {
 #searchKey {
 	width:160px;
 }
+.navbar-new{
+    background-color: #4a74bf!important;
+    
+}
+#loginForm{
+     width: 400px;
+    text-align: left;
+    margin: 50px 50px 50px 50px;
+    }
+.form-in{
+    width: 500px!important;
+    border: 1px solid black;
+   width: 250px; 
+    margin-left: 500px;
+    
+}
+.signin_head{
+    font-size: 20px;
+    text-align: center;
+}
+.center{
+    padding-top:70px!important;
+}
