@@ -1,4 +1,4 @@
-var rootURL = "http://localhost/event-manage/api/";
+var rootURL = "http://localhost/event-manage1/api/";
 
 var currentImage;
 
@@ -56,7 +56,7 @@ function addUser() {
    $.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: 'http://localhost/event-manage/api/getUsers',
+		url: 'http://localhost/event-manage1/api/getUsers',
 		dataType: "json",
 		data: JSON.stringify({
 		
@@ -93,6 +93,10 @@ $("#upload").submit(function(e){
   e.preventDefault();
 });
 
+
+
+
+
 function findAll() {
 	console.log('findAll');
 	$.ajax({
@@ -111,12 +115,9 @@ function findById(id) {
 		success: function(data){
 			
 			console.log('findById success: ' + data.name);
-			currentImage = data;
-            var txt_name=document.getElementById("txt_name").value;
-//			$('#txt_name').val(txt_name);
-//	$('#description').val(description);
-//	$('#action').val(action);
-//	$('#txt_file').attr('src', 'api/upload/' + txt_file);
+		currentImage = data;
+          renderDetails(currentImage);
+          
 		}
 	});
 }
@@ -128,18 +129,38 @@ function renderList(data) {
 
 //	$('#imageList li').remove();
 	$.each(list, function(index, data) {
-		$('#imageList').append('<tr href="#" data-identity="' + data.id + '"><td class="center">'+data.name+'</td><td class="center">'+data.description+'</td><td class="center">'+data.action+'</td><td><img  class="img-thumbnail" style="width:20%;" src='+data.image+'></td><td><button class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" onClick="findById('+data.id+');">Edit</button></td></tr>');
+		$('#imageList').append('<tr href="#" data-identity="' + data.id + '"><td class="center" id="names">'+data.name+'</td><td class="center">'+data.description+'</td><td class="center">'+data.action+'</td><td><img  class="img-thumbnail" style="width:20%;" src='+data.image+'></td><td><button class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" onClick="findById('+data.id+');">Edit</button></td></tr>');
 	});
 }
 $('#imageList tr').live('click', function() {
 	findById($(this).data('identity'));
 });
-function renderDetails(currentImage) {
-	
-	$('#txt_name').val(txt_name);
-	$('#description').val(description);
-	$('#action').val(action);
-	$('#txt_file').attr('src', 'api/upload/' + txt_file);
+
+$("#updateForm").submit(function(e){
+		var formData = new FormData($(this)[0]);
+debugger;
+    console.log('update');
+  $.ajax({
+    url: rootURL +  $('#id').val(),
+    type: "POST",
+    data: formData,
+    success: function (msg) {
+      alert(msg)
+    },
+    cache: false,
+    contentType: false,
+    processData: false
+  });
+
+  e.preventDefault();
+});
+
+function renderDetails(image) {
+	$('#id').val(image.id);
+	$('#txt_name').val(image.name);
+	$('#description').val(image.description);
+	$('#action').val(image.action);
+	$('#txt_file').attr('src', 'api/upload/' + image.txt_file);
 	
 }
 

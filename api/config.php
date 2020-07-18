@@ -1,6 +1,6 @@
 <?php
 //ob_start("ob_gzhandler");
-error_reporting(0);
+
 session_start();
 
 /* DATABASE CONFIGURATION */

@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(0);
+ini_set('display_errors', 1);
 require 'Slim/Slim.php';
 require 'config.php';
 require 'helper.php';
@@ -8,50 +9,50 @@ $app = new \Slim\Slim();
 
 
 $app->post('/file', 'fileGet');
-$app->post('/login','login'); /* User login */
+
 $app->post('/image','image'); 
 $app->get('/', 'getImages');
 $app->get('/:id','getImage');
+$app->put('/:id', 'updateImage');
 $app->run();
+function updateImage($id) {
+     $request = \Slim\Slim::getInstance()->request();
+    $data = json_decode($request->getBody());
+    $id = $_REQUEST['id'];
+       
+        try {
+            $name	= $_REQUEST['txt_name'];
+	    $description	= $_REQUEST['description'];	
+       $action	= $_REQUEST['action'];	
+		$image_file	= $_FILES["txt_file"]["name"];
+		$type		= $_FILES["txt_file"]["type"];		
+		$size		= $_FILES["txt_file"]["size"];
+		$temp		= $_FILES["txt_file"]["tmp_name"];
+		
+		$path="api/upload/".$image_file; 
+            echo $id;
+            $db = getDB();
+             $sql = "UPDATE images SET name=:name,description=:description,action=:action,image=:image WHERE id=:id";
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam("name", $name);
+             $stmt->bindParam("description", $description);
+             $stmt->bindParam("action", $action);
+             $stmt->bindParam("image", $path);
+            $stmt->bindParam("id", $id);
+            $stmt->execute();
+             move_uploaded_file($_FILES['txt_file']['tmp_name'],"upload/".$_FILES['txt_file']['name']);
+            $db = null;
+            echo '{"success":{"text":"saved"}}';
+
+        }catch (Exception $e) {
+                    echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+    
+}
 
 /************************* USER LOGIN *************************************/
 /* ### User login ### */
-function login() {
-    
-    $request = \Slim\Slim::getInstance()->request();
-    $data = json_decode($request->getBody());
-   
-    try {
-        
-        $db = getDB();
-        $userData ='';
-        $sql = "SELECT * FROM users WHERE (username=:username or email=:username) and password=:password ";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam("username", $data->username, PDO::PARAM_STR);
-        $password=hash('sha256',$data->password);
-        $stmt->bindParam("password", $password, PDO::PARAM_STR);
-        $stmt->execute();
-        $mainCount=$stmt->rowCount();
-        $userData = $stmt->fetch(PDO::FETCH_OBJ);
-        
-        if(!empty($userData))
-        {
-            $user_id=$userData->user_id;
-            $userData->token = apiToken($user_id);
-        }
-        
-        $db = null;
-         if($userData){
-               $userData = json_encode($userData);
-                echo '{"userData": ' .$userData . '}';
-            } else {
-               echo '{"error":{"text":"Bad request wrong username and password"}}';
-            }           
-    }
-    catch(PDOException $e) {
-        echo '{"error":{"text":'. $e->getMessage() .'}}';
-    }
-}
+
 function fileGet() {
  $request = \Slim\Slim::getInstance()->request();
     $data = json_decode($request->getBody());
@@ -110,7 +111,7 @@ function image() {
 		$size		= $_FILES["txt_file"]["size"];
 		$temp		= $_FILES["txt_file"]["tmp_name"];
 		
-		$path="upload/".$image_file; 
+		$path="api/upload/".$image_file; 
        echo $path;
 		if(empty($name)){
 			$errorMsg="Please Enter Name";
@@ -194,6 +195,10 @@ function getImage($id) {
 		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
 	}
 }
+
+
+
+
 function internalUserDetails($input) {
     
     try {

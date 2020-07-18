@@ -48,8 +48,8 @@
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Update file</h4>
         </div>
-        <form method="post" class="form-horizontal" id="upload" enctype="multipart/form-data">
-					
+        <form method="post" class="form-horizontal" id="updateForm" enctype="multipart/form-data">
+				<input  type="hidden" id="id" name="id" class="form-control" />	
 				<div class="form-group">
 				<label class="col-sm-3 control-label">Name</label>
 				<div class="col-sm-6">
@@ -77,13 +77,14 @@
 				<div class="form-group">
 				<label class="col-sm-3 control-label">File</label>
 				<div class="col-sm-6">
-				<input type="file" id="txt_file" name="txt_file" class="form-control" />
+				<input type="file" id="txt_file" name="txt_file" class="form-control" accept="image/*"/>
 				</div>
 				</div>
                 
 				<div class="form-group">
 				<div class="col-sm-offset-3 col-sm-9 m-t-15">
-				<input type="submit"  name="btn_insert" class="btn btn-success " value="Insert">
+                <input type="hidden" name="_METHOD" value="PUT"/>
+				<input type="submit"  name="btn_insert" class="btn btn-success" value="Insert">
 				<a href="index.php" class="btn btn-danger">Cancel</a>
 				</div>
 				</div>

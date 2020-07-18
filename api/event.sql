@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2020 at 03:18 PM
+-- Generation Time: Jul 18, 2020 at 03:06 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.3
 
@@ -32,6 +32,7 @@ CREATE TABLE `images` (
   `id` int(120) NOT NULL,
   `name` varchar(120) NOT NULL,
   `description` varchar(120) NOT NULL,
+  `action` int(120) NOT NULL,
   `image` varchar(120) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -39,21 +40,37 @@ CREATE TABLE `images` (
 -- Dumping data for table `images`
 --
 
-INSERT INTO `images` (`id`, `name`, `description`, `image`) VALUES
-(1, '', '', ''),
-(2, '', '', ''),
-(3, '', '', ''),
-(4, '', '', ''),
-(5, '', '', ''),
-(6, '', '', ''),
-(7, '', '', ''),
-(8, '', '', ''),
-(9, '', '', 'upload/Desert.jpg'),
-(10, '', '', 'upload/Chrysanthemum.jpg'),
-(11, '', '', 'upload/Chrysanthemum.jpg'),
-(12, 'test', 'test', '1.jpg'),
-(13, 'new', 'test', '2.jpg'),
-(14, 'new', '2323', 'Desert.jpg');
+INSERT INTO `images` (`id`, `name`, `description`, `action`, `image`) VALUES
+(1, 'juy', 'huhu', 1, 'api/upload/2.jpg'),
+(2, 'new', '2323', 1, 'api/upload/'),
+(3, '', '', 0, ''),
+(4, 'hjhj', 'hjhj', 1, 'api/upload/1.jpg'),
+(5, '', '', 0, ''),
+(6, '', '', 0, ''),
+(7, '', '', 0, ''),
+(8, '', '', 0, ''),
+(9, '', '', 0, 'upload/Desert.jpg'),
+(10, '', '', 0, 'upload/Chrysanthemum.jpg'),
+(11, '', '', 0, 'upload/Chrysanthemum.jpg'),
+(12, 'test', 'test', 0, '1.jpg'),
+(13, 'new', 'test', 0, '2.jpg'),
+(14, 'new', '2323', 0, 'Desert.jpg'),
+(15, 'test', 'test', 0, 'Lighthouse.jpg'),
+(16, 'test', 'test', 0, 'Lighthouse.jpg'),
+(17, 'test2', 'test2', 1, 'Tulips.jpg'),
+(18, 'new2', 'test3', 1, 'Jellyfish.jpg'),
+(19, 'new2', 'test5', 2, 'Jellyfish.jpg'),
+(20, 'test2', '2323', 2, 'Tulips.jpg'),
+(21, 'test2', '2323', 1, 'Penguins.jpg'),
+(22, 'new55', '2323uy', 1, 'Hydrangeas.jpg'),
+(23, '12', 'r4', 1, 'Tulips.jpg'),
+(24, 'hello', 'hello', 1, 'Chrysanthemum.jpg'),
+(25, 'new5522', '2323gy', 1, 'Penguins.jpg'),
+(26, 'reere', 'ere', 1, 'upload/Koala.jpg'),
+(27, 'new5543', 'test2343', 1, 'api/upload/Penguins.jpg'),
+(28, 'news', 'newsss', 2, 'api/upload/images.jpg'),
+(29, 'test', 'test', 1, 'api/upload/1.jpg'),
+(30, 'new', 'test', 1, 'api/upload/11.png');
 
 -- --------------------------------------------------------
 
@@ -110,7 +127,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `images`
 --
 ALTER TABLE `images`
-  MODIFY `id` int(120) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(120) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `users`
