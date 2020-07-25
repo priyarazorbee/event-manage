@@ -1,9 +1,10 @@
-var rootURL = "http://localhost/event-manage1/api/";
+var rootURL = "http://localhost/event-manage/api/";
 
 var currentImage;
 
 
-findAll();
+  findAll();  
+
 
 
 
@@ -27,7 +28,25 @@ $(document).ready(function() {
 		}
 	});
 	});
-    
+    $("#viewForm").submit(function(e){
+//		e.preventDefault();
+//        console.log('addUser');
+//    $.ajax({
+//		type: 'POST',
+//		contentType: 'application/json',
+//		url: rootURL +'view',
+//		dataType: "json",
+//		data: formToJS(),
+//		success: function(data, textStatus, jqXHR){
+//			alert('User created successfully');
+//		      debugger;
+//			$('#username').val(data.username);
+//		},
+//		error: function(jqXHR, textStatus, errorThrown){
+//			alert('addUser error: ' + textStatus);
+//		}
+//	});
+	});
    $("#loginForm").submit(function(e){
 		e.preventDefault();
         console.log('seeUser'); 
@@ -56,7 +75,7 @@ function addUser() {
    $.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: 'http://localhost/event-manage1/api/getUsers',
+		url: 'http://localhost/event-manage/api/getUsers',
 		dataType: "json",
 		data: JSON.stringify({
 		
@@ -93,7 +112,15 @@ $("#upload").submit(function(e){
   e.preventDefault();
 });
 
-
+function findAction() {
+	console.log('findAll');
+	$.ajax({
+		type: 'GET',
+		url: rootURL +'login',
+		dataType: "json", // data type of response
+		success: renderList
+	});
+}
 
 
 
@@ -121,15 +148,27 @@ function findById(id) {
 		}
 	});
 }
-
+$("#deleteForm").submit(function(e){
 	
+	console.log('deleteImage');
+	$.ajax({
+		type: 'DELETE',
+		url: rootURL + $('#id').val(),
+		success: function(data){
+			alert('Image deleted successfully');
+		},
+		error: function(textStatus){
+			alert('deleteImage error');
+		}
+	});
+});
 function renderList(data) {
-	
+
 	var list = data == null ? [] : (data.image instanceof Array ? data.image : [data.image]);
 
 //	$('#imageList li').remove();
 	$.each(list, function(index, data) {
-		$('#imageList').append('<tr href="#" data-identity="' + data.id + '"><td class="center" id="names">'+data.name+'</td><td class="center">'+data.description+'</td><td class="center">'+data.action+'</td><td><img  class="img-thumbnail" style="width:20%;" src='+data.image+'></td><td><button class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" onClick="findById('+data.id+');">Edit</button></td></tr>');
+		$('#imageList').append('<tr href="#" data-identity="' + data.id + '"><td class="center" id="names">'+data.name+'</td><td class="center">'+data.description+'</td><td class="center">'+data.action+'</td><td><img class="img-thumbnail" style="width:20%;" src='+data.image+'></td><td><button class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" onClick="findById('+data.id+');">Edit</button></td><td><button class="btn btn-danger btn-lg" data-toggle="modal" data-target="#myModal2">Delete</button></td></tr>');
 	});
 }
 $('#imageList tr').live('click', function() {
@@ -173,5 +212,15 @@ function formToJSON() {
 		"password": $('#password').val(),
 		"confirm_password": $('#confirm_password').val(),
 		
+		});
+}
+function formToJS() {
+	return JSON.stringify({
+		
+		"username": $('#username').val(), 
+		"email": $('#email').val(),
+		"password": $('#password').val(),
+		"confirm_password": $('#confirm_password').val(),
+		"phone":$('#phone').val(),
 		});
 }

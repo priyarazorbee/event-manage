@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+error_reporting(0         );
 ini_set('display_errors', 1);
 require 'Slim/Slim.php';
 require 'config.php';
@@ -9,11 +9,14 @@ $app = new \Slim\Slim();
 
 
 $app->post('/file', 'fileGet');
-
+$app->post('/view', 'viewGet');
 $app->post('/image','image'); 
 $app->get('/', 'getImages');
+$app->get('/action', 'getIdImages');
 $app->get('/:id','getImage');
 $app->put('/:id', 'updateImage');
+$app->delete('/:id','deleteImage');
+
 $app->run();
 function updateImage($id) {
      $request = \Slim\Slim::getInstance()->request();
@@ -98,6 +101,35 @@ function fileGet() {
     }
 }
 
+function viewGet() {
+ $request = \Slim\Slim::getInstance()->request();
+    $data = json_decode($request->getBody());
+   try {
+        $db = getDB();
+       $event_id=$_REQUEST['event_id'];
+        $username	= $_REQUEST['username'];
+	    $details	= $_REQUEST['details'];	
+       $phone	= $_REQUEST['phone'];	
+		
+		            
+			$insert_stmt=$db->prepare('INSERT INTO guest(username,details,phone,event_id) VALUES(:username,:details,:phone,:event_id)'); $insert_stmt->bindParam(':event_id',$event_id);	
+			$insert_stmt->bindParam(':username',$username);	
+            $insert_stmt->bindParam(':details',$details);
+            $insert_stmt->bindParam(':phone',$phone);
+			
+			if($insert_stmt->execute())
+			{
+				$insertMsg="File Upload Successfully........"; //execute query success message
+//				header("refresh:3;home.php"); //refresh 3 second and redirect to index.php page
+			}
+		}
+	
+	catch(PDOException $e)
+	{
+		echo $e->getMessage();
+	}
+}
+
 function image() {
     $request = \Slim\Slim::getInstance()->request();
     $data = json_decode($request->getBody());
@@ -179,6 +211,23 @@ function getImages() {
 	}
            
 }
+
+function getIdImages() {
+        $request = \Slim\Slim::getInstance()->request();
+        $data = json_decode($request->getBody()); 
+            $sql = "SELECT * FROM images WHERE action='1' ORDER BY id ASC ";
+	try {
+		$db = getDB();
+		$stmt = $db->query($sql);  
+		$images = $stmt->fetchAll(PDO::FETCH_OBJ);
+		$db = null;
+		echo '{"image": ' . json_encode($images) . '}';
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+           
+}
+
 function getImage($id) {
         $request = \Slim\Slim::getInstance()->request();
         $data = json_decode($request->getBody()); 
@@ -196,6 +245,20 @@ function getImage($id) {
 	}
 }
 
+function deleteImage($id) {
+    $request = \Slim\Slim::getInstance()->request();
+        $data = json_decode($request->getBody()); 
+	$sql = "DELETE FROM images WHERE id=:id";
+	try {
+		$db = getDB();
+		$stmt = $db->prepare($sql);  
+		$stmt->bindParam("id", $id);
+		$stmt->execute();
+		$db = null;
+	} catch(PDOException $e) {
+		echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+	}
+}
 
 
 
